@@ -11,9 +11,9 @@ CREATE TABLE IF NOT EXISTS abonnement(
     kunde_id INTEGER,
     car_id INTEGER,
     term INTEGER,
-    price_per_month INTEGER,
-    start_month DATETIME,
-    end_month DATETIME,
+    price_per_month REAL,
+    start_month TEXT,
+    end_month TEXT,
     restance BOOLEAN,
     contract_information TEXT )
 ''')
