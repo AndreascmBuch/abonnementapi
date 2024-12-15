@@ -7,7 +7,7 @@ import logging
 
 
 # Database path, ensure it’s set properly for the environment
-DB_PATH = os.getenv('DB_PATH', '/app/abonnement.db')
+DB_PATH = os.getenv('DB_PATH', 'abonnement.db')
 
 # Opret forbindelse til databasen
 def get_db_connection():
@@ -49,8 +49,9 @@ def create_abonnement():
         # Insert data into the database
         conn = get_db_connection()
         cursor = conn.cursor()
+
         cursor.execute("""
-            INSERT INTO 123 (kunde_id, car_id, term, price_per_month, start_month, end_month, restance, contract_information)
+            INSERT INTO abonnement (kunde_id, car_id, term, price_per_month, start_month, end_month, restance, contract_information)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """, (kunde_id, car_id, term, price_per_month, start_month, end_month, restance, contract_information))
         conn.commit()
@@ -66,7 +67,7 @@ def get_abonnementer():
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM 123")
+        cursor.execute("SELECT * FROM abonnement ")
         subscription = [dict(row) for row in cursor.fetchall()]
         conn.close()
         return jsonify(subscription), 200
@@ -78,7 +79,7 @@ def get_abonnement(subscription_id):
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM subscription WHERE subscription_id = ?", (subscription_id,))
+        cursor.execute("SELECT * FROM abonnement WHERE subscription_id = ?", (subscription_id,))
         row = cursor.fetchone()
         conn.close()
         
