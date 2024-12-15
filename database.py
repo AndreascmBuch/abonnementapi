@@ -6,7 +6,7 @@ cursor = conn.cursor()
 
 # Opret tabellen med abonnementsdata
 cursor.execute('''
-CREATE TABLE IF NOT EXISTS subscription (
+CREATE TABLE IF NOT EXISTS  123 (
     subscription_id INTEGER PRIMARY KEY AUTOINCREMENT, 
     kunde_id INTEGER,
     car_id INTEGER,

@@ -50,7 +50,7 @@ def create_abonnement():
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute("""
-            INSERT INTO subscription (kunde_id, car_id, term, price_per_month, start_month, end_month, restance, contract_information)
+            INSERT INTO 123 (kunde_id, car_id, term, price_per_month, start_month, end_month, restance, contract_information)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """, (kunde_id, car_id, term, price_per_month, start_month, end_month, restance, contract_information))
         conn.commit()
@@ -66,7 +66,7 @@ def get_abonnementer():
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM subscription")
+        cursor.execute("SELECT * FROM 123")
         subscription = [dict(row) for row in cursor.fetchall()]
         conn.close()
         return jsonify(subscription), 200
