@@ -3,7 +3,6 @@ from flask import Flask, jsonify, request
 import requests
 from dotenv import load_dotenv
 import os
-import logging
 
 
 # Database path, ensure it’s set properly for the environment
