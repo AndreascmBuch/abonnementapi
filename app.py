@@ -16,6 +16,7 @@ def get_db_connection():
     return conn
 
 app = Flask(__name__)
+load_dotenv() 
 
 @app.route('/abonnement', methods=['POST'])
 def create_abonnement():
