@@ -4,25 +4,52 @@ import requests
 from dotenv import load_dotenv
 import os
 
+# Load environment variables
+load_dotenv()
 
-# Database path, ensure it’s set properly for the environment
-load_dotenv() 
-DB_PATH = os.getenv('DB_PATH', 'abonnement.db')
+# Database path for Azure (use a writable directory like /home/ or /tmp/)
+DB_PATH = os.getenv('DB_PATH', '/home/abonnement.db')
 
-# Opret forbindelse til databasen
+# Ensure the database and table exist
+def initialize_database():
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS abonnement (
+            subscription_id INTEGER PRIMARY KEY AUTOINCREMENT, 
+            kunde_id INTEGER,
+            car_id INTEGER,
+            term INTEGER,
+            price_per_month REAL,
+            start_month TEXT,
+            end_month TEXT,
+            restance INTEGER,
+            contract_information TEXT
+        )
+        ''')
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"Error initializing database: {e}")
+
+# Initialize the database at startup
+initialize_database()
+
+# Flask application setup
+app = Flask(__name__)
+
+# Get database connection
 def get_db_connection():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row 
     return conn
 
-app = Flask(__name__)
-
-
 @app.route('/abonnement', methods=['POST'])
 def create_abonnement():
     try:
         data = request.json
-        
+
         required_fields = ["kunde_id", "car_id", "term", "price_per_month", "start_month", "end_month", "restance", "contract_information"]
         for field in required_fields:
             if field not in data:
@@ -61,6 +88,7 @@ def create_abonnement():
         return jsonify({"message": "Abonnement oprettet succesfuldt"}), 201
 
     except Exception as e:
+        print(f"Error creating abonnement: {e}")
         return jsonify({"error": f"Der opstod en fejl: {str(e)}"}), 500
 
 @app.route('/abonnement', methods=['GET'])
@@ -68,11 +96,12 @@ def get_abonnementer():
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM abonnement ")
+        cursor.execute("SELECT * FROM abonnement")
         subscription = [dict(row) for row in cursor.fetchall()]
         conn.close()
         return jsonify(subscription), 200
     except Exception as e:
+        print(f"Error fetching abonnementer: {e}")
         return jsonify({"error": "Der opstod en fejl"}), 500
 
 @app.route('/abonnement/<int:subscription_id>', methods=['GET'])
@@ -83,13 +112,14 @@ def get_abonnement(subscription_id):
         cursor.execute("SELECT * FROM abonnement WHERE subscription_id = ?", (subscription_id,))
         row = cursor.fetchone()
         conn.close()
-        
+
         if row:
             subscription = dict(row)
             return jsonify(subscription), 200
         else:
             return jsonify({"error": "Abonnement ikke fundet"}), 404
     except Exception as e:
+        print(f"Error fetching abonnement: {e}")
         return jsonify({"error": f"Serverfejl: {str(e)}"}), 500
 
 @app.route('/', methods=['GET'])
