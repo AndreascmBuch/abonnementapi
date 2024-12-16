@@ -1,3 +1,4 @@
+import os 
 import sqlite3
 
 # Opret forbindelse til databasen
