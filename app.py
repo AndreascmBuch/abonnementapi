@@ -3,6 +3,8 @@ from flask import Flask, jsonify, request
 import requests
 from dotenv import load_dotenv
 import os
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
+
 
 # Load environment variables
 load_dotenv()
@@ -39,6 +41,22 @@ initialize_database()
 # Flask application setup
 app = Flask(__name__)
 
+# Configure JWT settings
+app.config['JWT_SECRET_KEY'] = os.getenv('KEY', 'your_secret_key')  # Load from .env
+app.config['JWT_TOKEN_LOCATION'] = ['headers']  # Ensure tokens are in headers
+app.config['JWT_HEADER_NAME'] = 'Authorization'  # Default header name for JWT
+app.config['JWT_HEADER_TYPE'] = 'Bearer'  # Prefix for the token (e.g., Bearer <token>)
+
+# Initialize the JWT manager
+jwt = JWTManager(app)
+
+@app.route('/debug', methods=['GET'])
+def debug():
+    return jsonify({
+        "JWT_SECRET_KEY": os.getenv('KEY', 'Not Set'),
+        "Database_Path": DB_PATH
+    }), 200
+
 # Get database connection
 def get_db_connection():
     conn = sqlite3.connect(DB_PATH)
@@ -46,6 +64,7 @@ def get_db_connection():
     return conn
 
 @app.route('/abonnement', methods=['POST'])
+@jwt_required()
 def create_abonnement():
     try:
         data = request.json
@@ -92,6 +111,7 @@ def create_abonnement():
         return jsonify({"error": f"Der opstod en fejl: {str(e)}"}), 500
 
 @app.route('/abonnement', methods=['GET'])
+@jwt_required()
 def get_abonnementer():
     try:
         conn = get_db_connection()
@@ -105,6 +125,7 @@ def get_abonnementer():
         return jsonify({"error": "Der opstod en fejl"}), 500
 
 @app.route('/abonnement/<int:subscription_id>', methods=['GET'])
+@jwt_required()
 def get_abonnement(subscription_id):
     try:
         conn = get_db_connection()
