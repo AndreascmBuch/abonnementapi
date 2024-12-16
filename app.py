@@ -6,7 +6,8 @@ import os
 
 
 # Database path, ensure it’s set properly for the environment
-
+load_dotenv() 
+DB_PATH = os.getenv('DB_PATH', 'abonnement.db')
 
 # Opret forbindelse til databasen
 def get_db_connection():
@@ -15,8 +16,7 @@ def get_db_connection():
     return conn
 
 app = Flask(__name__)
-load_dotenv() 
-DB_PATH = os.getenv('DB_PATH', 'abonnement.db')
+
 
 @app.route('/abonnement', methods=['POST'])
 def create_abonnement():
