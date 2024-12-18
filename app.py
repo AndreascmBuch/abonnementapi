@@ -63,7 +63,7 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row 
     return conn
 
-@app.route('/abonnement', methods=['POST'])
+@app.route('/abonnement/add', methods=['POST'])
 @jwt_required()
 def create_abonnement():
     try:
